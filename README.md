@@ -36,7 +36,7 @@ SuperApp — графический файловый менеджер на Java 
  1) Перейти в каталог проекта
 
 ```bash
-cd /путь/к/SuperApp
+cd /путь/к/SuperApp1.0
 ```
 
  2) Запустить программу
@@ -53,7 +53,7 @@ java -jar SuperApp.jar
  Запуск без скрипта (альтернатива)
 
 ```bash
-cd /путь/к/SuperApp
+cd /путь/к/SuperApp1.0
 java -jar SuperApp.jar
 ```
 ---
