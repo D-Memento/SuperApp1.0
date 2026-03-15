@@ -37,7 +37,7 @@ public class FileManager {
         systemDir = new File("System");
         systemPath = systemDir.getAbsolutePath();
 
-        // Инициализация системы Drag-and-Drop
+        
         dragAndDropHandler = new FileDragAndDropHandler(this, documentsPath, trashPath);
         dragAndDropHandler.addDropTarget(fileTree);
         dragAndDropHandler.enableDragAndDrop(fileTree);
@@ -51,7 +51,7 @@ public class FileManager {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
         DefaultMutableTreeNode removableNode = null;
 
-        // Находим узел "Съемные устройства"
+        
         for (int i = 0; i < root.getChildCount(); i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
             if ("Съемные устройства".equals(child.getUserObject())) {
@@ -61,10 +61,10 @@ public class FileManager {
         }
 
         if (removableNode != null) {
-            // Очищаем старые узлы
+            
             removableNode.removeAllChildren();
 
-            // Добавляем новые узлы
+            
             RemovableDeviceManager deviceManager = new RemovableDeviceManager();
             List<File> devices = deviceManager.getMountedDevices();
             if (devices.isEmpty()) {
@@ -195,13 +195,13 @@ public class FileManager {
         createFolderItem.setFont(font);
 
         if ("Корзина".equals(fileName)) {
-            // Для Корзины
+            
             menu.add(clearTrash);
             menu.add(properties);
             clearTrash.addActionListener(e -> clearTrash());
             properties.addActionListener(e -> showProperties(trashDir.getAbsolutePath()));
         } else if ("Мои документы".equals(fileName)) {
-            // Для "Мои документы"
+            
             menu.add(createFileItem);
             menu.add(createFolderItem);
             menu.add(properties);
@@ -213,7 +213,7 @@ public class FileManager {
             File file = findFileInAllDirectories(fileName);
             if (file != null && file.getAbsolutePath().startsWith(systemPath)) {
                 Logger.log("Попытка выполнения действия с папкой System: " + fileName);
-                // Блокируем действия — показываем только "Свойства"
+                
                 JMenuItem propertiesOnly = new JMenuItem("Свойства");
                 propertiesOnly.setFont(font);
                 propertiesOnly.addActionListener(e -> showProperties(file.getAbsolutePath()));
@@ -354,7 +354,7 @@ public class FileManager {
             okButton.addActionListener(e -> {
                 File newFile = new File(oldFile.getParent() + "/" + newNameField.getText());
                 if (oldFile.renameTo(newFile)) {
-                    refreshDirectoryNode(newFile.getParentFile()); // Обновляем только родительскую директорию
+                    refreshDirectoryNode(newFile.getParentFile()); 
                 }
                 dialog.dispose();
             });
@@ -397,10 +397,10 @@ public class FileManager {
         for (File file : sourceDir.listFiles()) {
             File destFile = new File(targetDir, file.getName());
             if (file.isDirectory()) {
-                // Рекурсивно копируем поддиректории
+                
                 copyDirectoryToTrash(file, destFile);
             } else {
-                // Копируем файлы
+                
                 Files.copy(file.toPath(), destFile.toPath());
             }
         }
@@ -464,10 +464,10 @@ public class FileManager {
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    // Рекурсивно удаляем содержимое поддиректорий
+                    
                     deleteDirectoryContents(file);
                 }
-                // Удаляем сам файл или пустую директорию
+                
                 file.delete();
             }
         }
@@ -479,11 +479,11 @@ public class FileManager {
             if (file.exists()) {
                 StringBuilder info = new StringBuilder();
 
-                // Общие свойства
+                
                 info.append("Имя: ").append(file.getName()).append("\n");
                 info.append("Тип: ").append(file.isDirectory() ? "Папка" : "Файл").append("\n");
 
-                // Размер (для файлов и папок)
+                
                 if (file.isFile()) {
                     info.append("Размер: ").append(file.length()).append(" байт\n");
                 } else if (file.isDirectory()) {
@@ -493,7 +493,7 @@ public class FileManager {
 
                 info.append("Путь: ").append(file.getAbsolutePath());
 
-                // Отображение информации в диалоговом окне
+                
                 JTextArea textArea = new JTextArea(info.toString());
                 textArea.setEditable(false);
                 JScrollPane scrollPane = new JScrollPane(textArea);
@@ -510,7 +510,7 @@ public class FileManager {
         }
     }
 
-    // Метод для вычисления размера директории
+    
     private long calculateDirectorySize(File dir) {
         long size = 0;
         File[] files = dir.listFiles();
@@ -714,13 +714,13 @@ public class FileManager {
 
     public boolean deleteFileOrDirectory(File file) {
         if (file.isDirectory()) {
-            // Рекурсивное удаление содержимого папки
+            
             for (File child : file.listFiles()) {
                 deleteFileOrDirectory(child);
             }
-            return file.delete(); // Удаление самой папки
+            return file.delete(); 
         } else {
-            return file.delete(); // Удаление файла
+            return file.delete(); 
         }
     }
 
@@ -764,7 +764,7 @@ public class FileManager {
         try {
             File dest = new File(documentsPath + "/" + file.getName());
             Files.copy(file.toPath(), dest.toPath());
-            refreshDirectoryNode(dest.getParentFile()); // Обновляем только родительскую директорию
+            refreshDirectoryNode(dest.getParentFile()); 
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -832,13 +832,13 @@ public class FileManager {
     public File getSelectedFile() {
         TreePath selectedPath = fileTree.getSelectionPath();
         if (selectedPath == null) {
-            return null; // Ничего не выбрано
+            return null; 
         }
 
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
-        String nodeName = (String) selectedNode.getUserObject(); // Получаем имя узла
+        String nodeName = (String) selectedNode.getUserObject(); 
 
-        // Проверяем, является ли узел специальной папкой
+        
         if ("Мои документы".equals(nodeName)) {
             return documentsDir;
         } else if ("Корзина".equals(nodeName)) {
@@ -849,13 +849,13 @@ public class FileManager {
         }
 
         if ("Съемные устройства".equals(nodeName)) {
-            // Возвращаем корневой каталог съемных устройств
+            
             return new File("/media/user");
         }
 
         File selectedFile = findFileInAllDirectories(nodeName);
         if (selectedFile != null && selectedFile.getAbsolutePath().startsWith(systemPath)) {
-            return null; // или бросить исключение / показать сообщение
+            return null; 
         }
 
         return selectedFile;
