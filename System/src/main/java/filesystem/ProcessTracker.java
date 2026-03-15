@@ -16,10 +16,10 @@ public class ProcessTracker {
     private LocalDateTime appStartTime;
 
     public ProcessTracker() {
-        this.appStartTime = LocalDateTime.now(); // Запоминаем время старта приложения
+        this.appStartTime = LocalDateTime.now(); 
     }
 
-    // Класс для хранения информации о процессе
+    
     public static class ProcessInfo {
         private String processName;
         private String startTime;
@@ -46,7 +46,7 @@ public class ProcessTracker {
     }
 
 
-    // Получение списка всех активных процессов
+    
     public void trackProcesses() {
         System.out.println("Отслеживание процессов...");
         SystemInfo systemInfo = new SystemInfo();
@@ -56,7 +56,7 @@ public class ProcessTracker {
             LocalDateTime processStartTime = Instant.ofEpochMilli(process.getStartTime())
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime();
-            // Проверяем, был ли процесс запущен после старта приложения
+            
             if (processStartTime.isAfter(appStartTime)) {
                 processes.add(new ProcessInfo(process.getName(), processStartTime));
                 System.out.println("Добавлен процесс: " + process.getName() + ", Время старта: " + processStartTime);
@@ -65,7 +65,7 @@ public class ProcessTracker {
         System.out.println("Общее количество процессов: " + processes.size());
     }
 
-    // Метод для получения списка процессов
+    
     public List<ProcessInfo> getProcesses() {
         return processes;
     }
