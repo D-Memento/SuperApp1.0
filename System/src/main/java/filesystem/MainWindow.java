@@ -14,12 +14,12 @@ import java.util.Stack;
 public class MainWindow extends JFrame {
     private filesystem.FileManager fileManager;
     private filesystem.ProcessTracker processTracker = new filesystem.ProcessTracker();
-    private filesystem.FileDragAndDropHandler dragAndDropHandler; // Объявление dragAndDropHandler
+    private filesystem.FileDragAndDropHandler dragAndDropHandler; 
     private JTextField searchField;
-    private File currentDirectory = new File(System.getProperty("user.home")); // Текущая директория
-    private JLabel systemInfoLabel; // Метка для отображения системной информации
-    private JPanel cardPanel; // Панель для карточного интерфейса
-    private JButton backButton; // Кнопка "Назад"
+    private File currentDirectory = new File(System.getProperty("user.home")); 
+    private JLabel systemInfoLabel; 
+    private JPanel cardPanel; 
+    private JButton backButton; 
 
     public MainWindow() {
         setTitle("Суперапп - Файловый менеджер");
@@ -27,24 +27,23 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Инициализация FileManager
+        
         fileManager = new filesystem.FileManager(this);
 
-        // Панель для поиска
+        
         JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
         searchField = new JTextField(20);
         JButton searchButton = new JButton("Поиск");
         searchButton.setFont(new Font("Arial", Font.BOLD, 20));
-        Font searchFont = new Font("Arial", Font.PLAIN, 21); // Устанавливаем размер шрифта
+        Font searchFont = new Font("Arial", Font.PLAIN, 21); 
         searchField.setFont(searchFont);
 
-        // Действие при нажатии на кнопку "Поиск"
         searchButton.addActionListener(e -> {
             String query = searchField.getText().trim();
             if (!query.isEmpty()) {
                 List<File> searchResults = fileManager.searchFilesAndFolders(query);
                 displaySearchResults(searchResults);
-                filesystem.Logger.logSearchPerformed(query); // Логируем запрос
+                filesystem.Logger.logSearchPerformed(query); 
             } else {
                 JOptionPane.showMessageDialog(this, "Введите запрос для поиска!", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
@@ -55,13 +54,13 @@ public class MainWindow extends JFrame {
         searchPanel.add(searchButton, BorderLayout.EAST);
         add(searchPanel, BorderLayout.NORTH);
 
-        // Левая панель: древовидное представление
+        
         JScrollPane treeScrollPane = new JScrollPane(fileManager.getFileTree());
         treeScrollPane.setPreferredSize(new Dimension(300, getHeight()));
 
-        // Правая панель: карточный интерфейс
+        
         cardPanel = new JPanel();
-        cardPanel.setLayout(new GridLayout(4, 4, 10, 10)); // 4 колонки, адаптивные строки
+        cardPanel.setLayout(new GridLayout(4, 4, 10, 10)); 
         cardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         cardPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -78,55 +77,55 @@ public class MainWindow extends JFrame {
                 }
             }
         });
-        // Панель управления навигацией
+        
         JPanel navigationPanel = new JPanel(new BorderLayout(5, 5));
-        backButton = new JButton("← Назад"); // Создание кнопки "Назад"
+        backButton = new JButton("← Назад"); 
         backButton.setFont(new Font("Arial", Font.BOLD, 16));
-        backButton.setEnabled(false); // Кнопка недоступна, пока нет истории
+        backButton.setEnabled(false); 
 
-        // Действие при нажатии на кнопку "Назад"
+        
         backButton.addActionListener(e -> {
             if (!navigationHistory.isEmpty()) {
-                currentDirectory = navigationHistory.pop(); // Возвращаемся к предыдущей папке
+                currentDirectory = navigationHistory.pop(); 
                 updateCardPanel(currentDirectory);
-                backButton.setEnabled(!navigationHistory.isEmpty()); // Отключаем кнопку, если история пуста
+                backButton.setEnabled(!navigationHistory.isEmpty()); 
             }
         });
 
         navigationPanel.add(backButton, BorderLayout.WEST);
 
-        // Разделение экрана на две части
+        
         JScrollPane cardScrollPane = new JScrollPane(cardPanel);
-        cardScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Только вертикальная прокрутка
-        cardScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Для более плавной прокрутки
+        cardScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+        cardScrollPane.getVerticalScrollBar().setUnitIncrement(16); 
 
-// Разделение экрана на две части
+
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, cardScrollPane);
-        splitPane.setDividerLocation(300); // Ширина левой панели
+        splitPane.setDividerLocation(300); 
 
-        // Объединяем панели
+        
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(navigationPanel, BorderLayout.NORTH);
         rightPanel.add(splitPane, BorderLayout.CENTER);
 
         add(rightPanel, BorderLayout.CENTER);
 
-        // Добавление обработчика выбора узла в дереве файлов
+        
         fileManager.getFileTree().addTreeSelectionListener(e -> {
             TreePath selectedPath = fileManager.getFileTree().getSelectionPath();
             if (selectedPath != null) {
                 DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
                 String nodeName = (String) selectedNode.getUserObject();
 
-                // Получаем выбранный файл или системную папку
+                
                 File selectedFile = fileManager.getSelectedFile();
 
                 if (selectedFile != null) {
                     if (selectedFile.isDirectory()) {
-                        navigateToDirectory(selectedFile); // Переход к выбранной папке
+                        navigateToDirectory(selectedFile); 
                     }
                 } else {
-                    // Обработка специальных системных папок
+                    
                     switch(nodeName) {
                         case "Мои документы":
                             navigateToDirectory(new File(fileManager.getDocumentsPath()));
@@ -156,17 +155,17 @@ public class MainWindow extends JFrame {
             }
         });
 
-        // Создание Drag-and-Drop обработчика
+        
         dragAndDropHandler = new filesystem.FileDragAndDropHandler(fileManager,
                 fileManager.getDocumentsPath(),
                 fileManager.getTrashPath());
 
-        // Настройка DnD для всего окна
-        dragAndDropHandler.addDropTarget((JComponent) getContentPane()); // Применяем DnD к корневому контейнеру
-        dragAndDropHandler.addDropTarget(treeScrollPane); // Для дерева файлов
-        dragAndDropHandler.addDropTarget(searchPanel);   // Для панели поиска
+        
+        dragAndDropHandler.addDropTarget((JComponent) getContentPane()); 
+        dragAndDropHandler.addDropTarget(treeScrollPane); 
+        dragAndDropHandler.addDropTarget(searchPanel);   
 
-        // Создание метки для отображения системной информации
+        
         systemInfoLabel = new JLabel("", SwingConstants.CENTER);
         systemInfoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         add(systemInfoLabel, BorderLayout.SOUTH);
@@ -175,7 +174,7 @@ public class MainWindow extends JFrame {
 
         createMenuBar();
 
-        new filesystem.HotkeyManager(this, fileManager); // Присоединяем HotkeyManager
+        new filesystem.HotkeyManager(this, fileManager); 
 
         currentDirectory = new File(fileManager.getDocumentsPath());
         updateCardPanel(currentDirectory);
@@ -225,17 +224,17 @@ public class MainWindow extends JFrame {
 
         if (directory.isDirectory()) {
             if (currentDirectory != null) {
-                navigationHistory.push(currentDirectory); // Сохраняем текущую папку в истории
+                navigationHistory.push(currentDirectory); 
             }
             currentDirectory = directory;
             updateCardPanel(directory);
             updateCardPanel(directory);
             filesystem.Logger.logDirectoryOpen(directory.getAbsolutePath());
-            backButton.setEnabled(true); // Включаем кнопку "Назад"
+            backButton.setEnabled(true); 
         }
     }
 
-    private Stack<File> navigationHistory = new Stack<>(); // Стек для истории переходов
+    private Stack<File> navigationHistory = new Stack<>(); 
 
     private JPanel createFileCard(File file) {
         JPanel card = new JPanel();
@@ -255,12 +254,12 @@ public class MainWindow extends JFrame {
         card.add(iconLabel, BorderLayout.CENTER);
         card.add(nameLabel, BorderLayout.SOUTH);
 
-        // обработчик кликов для выбора карточки
+        
         card.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { // Двойной клик
+                if (e.getClickCount() == 2) { 
                     handleCardSelection(file);
-                } else if (e.getClickCount() == 1) { // Одиночный клик
+                } else if (e.getClickCount() == 1) { 
                     selectCard(card, file);
                 }
             }
@@ -299,12 +298,12 @@ public class MainWindow extends JFrame {
         fileManager.highlightFileInTree(file);
     }
     private void updateCardPanel(File directory) {
-        cardPanel.removeAll(); // Очищаем панель
+        cardPanel.removeAll(); 
 
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
-                // Создаем карточку для каждого файла/папки
+                
                 JPanel card = createFileCard(file);
                 cardPanel.add(card);
             }
@@ -322,7 +321,7 @@ public class MainWindow extends JFrame {
         fileMenu.setFont(new Font("Arial", Font.BOLD, 20));
         JMenuItem aboutItem = createMenuItem("О программе", e -> showAbout());
         JMenuItem saveReportItem = createMenuItem("Сохранить отчет", e -> {
-            processTracker.trackProcesses(); // Отслеживаем процессы перед сохранением
+            processTracker.trackProcesses(); 
             saveReport();
         });
         JMenuItem saveLogItem = createMenuItem("Сохранить лог", e -> {
@@ -335,16 +334,16 @@ public class MainWindow extends JFrame {
         fileMenu.add(saveLogItem);
         fileMenu.add(aboutItem);
 
-        // Меню "Устройства"
+        
         JMenu deviceMenu = new JMenu("Устройства");
         deviceMenu.setFont(new Font("Arial", Font.BOLD, 20));
         JMenuItem refreshDevicesItem = createMenuItem("Обновить устройства", e -> {
-            fileManager.refreshRemovableDevicesNode(); // Ручное обновление
+            fileManager.refreshRemovableDevicesNode(); 
             Logger.log("Съемные устройства обновлены вручную");
         });
         deviceMenu.add(refreshDevicesItem);
 
-        // Меню "Справка"
+        
         JMenu helpMenu = new JMenu("Справка");
         helpMenu.setFont(new Font("Arial", Font.BOLD, 20));
         JMenuItem hotkeysItem = createMenuItem("Горячие клавиши", e -> showHotkeysInfo());
@@ -360,7 +359,7 @@ public class MainWindow extends JFrame {
         utilitiesMenu.add(systemMonitorItem);
         utilitiesMenu.add(controlCenterItem);
 
-        // Новое меню "Инструменты"
+        
         JMenu toolsMenu = new JMenu("Инструменты");
         toolsMenu.setFont(new Font("Arial", Font.BOLD, 20));
         JMenuItem terminalItem = createMenuItem("Открыть терминал", e -> {
@@ -424,7 +423,7 @@ public class MainWindow extends JFrame {
                 while (true) {
                     WatchKey key;
                     try {
-                        key = watchService.take(); // Ожидаем событие
+                        key = watchService.take(); 
                     } catch (InterruptedException e) {
                         return;
                     }
@@ -514,7 +513,7 @@ public class MainWindow extends JFrame {
         resultList.setFont(new Font("Arial", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(resultList);
 
-        // При выборе файла из списка выделяем его в дереве
+        
         resultList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int selectedIndex = resultList.getSelectedIndex();
@@ -528,7 +527,7 @@ public class MainWindow extends JFrame {
 
     private void launchUtility(String command) {
         try {
-            // Всегда запускать как внешнюю команду
+            
             Runtime.getRuntime().exec(command);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
@@ -544,7 +543,7 @@ public class MainWindow extends JFrame {
                 try {
                     String systemInfo = collectSystemInfo();
                     SwingUtilities.invokeLater(() -> systemInfoLabel.setText(systemInfo));
-                    Thread.sleep(5000); // Обновление каждые 5 секунд
+                    Thread.sleep(5000); 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -651,15 +650,15 @@ public class MainWindow extends JFrame {
             String classpath = System.getProperty("java.class.path");
             String className = "filesystem.PopupWindow";
 
-            // Запускаем PopupWindow как отдельный процесс
+            
             ProcessBuilder pb = new ProcessBuilder(javaHome, "-cp", classpath, className);
-            pb.redirectErrorStream(true); // Перенаправляем ошибки
+            pb.redirectErrorStream(true); 
 
-            popupProcess = pb.start(); // Запускаем процесс
+            popupProcess = pb.start(); 
 
             OutputStreamWriter writer = new OutputStreamWriter(popupProcess.getOutputStream());
 
-            // Отправляем данные каждые 5 секунд
+            
             new Thread(() -> {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
@@ -677,7 +676,7 @@ public class MainWindow extends JFrame {
                 }
             }).start();
 
-            // Добавляем информацию о новом процессе в tracker
+            
             long pid = popupProcess.pid();
             processTracker.getProcesses().add(
                     new ProcessTracker.ProcessInfo("PopupWindow", LocalDateTime.now(), pid)
