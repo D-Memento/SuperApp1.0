@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RemovableDeviceManager {
-    private static final String MEDIA_PATH = "/media"; // Путь к монтированным устройствам
+    private static final String MEDIA_PATH = "/media"; 
     private static final String MNT_PATH = "/mnt";
 
     public List<File> getMountedDevices() {
