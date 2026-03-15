@@ -38,11 +38,11 @@ public class FileDragAndDropHandler {
             }
             @Override
             public void dropActionChanged(DropTargetDragEvent dtde) {
-                // No-op
+                
             }
             @Override
             public void dragExit(DropTargetEvent dte) {
-                // No-op
+                
             }
             @Override
             public void drop(DropTargetDropEvent dtde) {
@@ -60,7 +60,7 @@ public class FileDragAndDropHandler {
                                 File targetDir = resolveDirectory(targetNodeName);
 
                                 if (targetDir != null && targetDir.isDirectory()) {
-                                    // 🔒 Проверка: нельзя перемещать/копировать в папку System
+                                    
                                     if (targetDir.getAbsolutePath().startsWith(fileManager.getSystemPath())) {
                                         JOptionPane.showMessageDialog(null, "Нельзя копировать или перемещать файлы в папку System.");
                                         Logger.log("Попытка переместить/скопировать файл в папку System заблокирована");
@@ -133,22 +133,22 @@ public class FileDragAndDropHandler {
     private void moveOrCopyFile(File sourceFile, File targetDir, boolean isMove) {
         try {
             if (sourceFile.isDirectory()) {
-                // Создаем целевую директорию, если её нет
+                
                 File destDir = new File(targetDir, sourceFile.getName());
                 if (!destDir.exists()) {
                     destDir.mkdirs();
                 }
 
-                // Рекурсивно копируем содержимое
+                
                 copyDirectoryRecursively(sourceFile, destDir);
 
-                // Удаляем исходную директорию, если это перемещение
+                
                 if (isMove) {
                     deleteDirectoryContents(sourceFile);
-                    sourceFile.delete(); // Удаляем саму директорию
+                    sourceFile.delete(); 
                 }
             } else {
-                // Обработка файлов
+                
                 File destFile = new File(targetDir, sourceFile.getName());
                 if (!destFile.exists()) {
                     if (isMove) {
@@ -157,7 +157,7 @@ public class FileDragAndDropHandler {
                         Files.copy(sourceFile.toPath(), destFile.toPath());
                     }
                 } else {
-                    // Обработка конфликтов имен файлов
+                    
                     String baseName = "Копия_" + sourceFile.getName();
                     destFile = new File(targetDir, baseName);
                     int copyNumber = 1;
@@ -173,13 +173,13 @@ public class FileDragAndDropHandler {
                     }
                 }
 
-                // Удаляем исходный файл, если это перемещение
+                
                 if (isMove) {
                     sourceFile.delete();
                 }
             }
 
-            // Обновляем дерево для исходной и целевой директорий
+            
             if (isMove) {
                 fileManager.refreshDirectoryNode(sourceFile.getParentFile());
             }
@@ -199,10 +199,10 @@ public class FileDragAndDropHandler {
             for (File file : files) {
                 File destFile = new File(targetDir, file.getName());
                 if (file.isDirectory()) {
-                    // Рекурсивно копируем поддиректории
+                    
                     copyDirectoryRecursively(file, destFile);
                 } else {
-                    // Копируем файлы
+                    
                     Files.copy(file.toPath(), destFile.toPath());
                 }
             }
@@ -214,10 +214,10 @@ public class FileDragAndDropHandler {
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    // Рекурсивно удаляем содержимое поддиректорий
+                    
                     deleteDirectoryContents(file);
                 }
-                // Удаляем сам файл или пустую директорию
+                
                 file.delete();
             }
         }
@@ -239,7 +239,7 @@ public class FileDragAndDropHandler {
                     String fileName = path.getLastPathComponent().toString();
                     File file = fileManager.findFileInAllDirectories(fileName);
                     if (file != null) {
-                        // 🔒 Проверяем, не является ли файл частью System
+                        
                         if (file.getAbsolutePath().startsWith(fileManager.getSystemPath())) {
                             isSystemFileSelected = true;
                         } else {
@@ -248,7 +248,7 @@ public class FileDragAndDropHandler {
                     }
                 }
 
-                // Если выбраны файлы из System — запрещаем перетаскивание
+                
                 if (isSystemFileSelected) {
                     JOptionPane.showMessageDialog(null, "Нельзя перетаскивать файлы из папки System.");
                     return null;
@@ -260,7 +260,7 @@ public class FileDragAndDropHandler {
 
             @Override
             public int getSourceActions(JComponent c) {
-                return MOVE; // Разрешаем только перемещение
+                return MOVE; 
             }
         });
     }
