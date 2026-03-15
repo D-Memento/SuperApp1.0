@@ -18,11 +18,11 @@ public class Terminal extends JFrame {
     public Terminal(FileManager fileManager) {
         this.fileManager = fileManager;
 
-        // Получаем корневую папку приложения (например, "Файловый менеджер")
+        
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) fileManager.getFileTree().getModel().getRoot();
         String rootNodeName = (String) root.getUserObject();
 
-        // Устанавливаем текущую директорию как корень приложения
+        
         currentDirectory = new File(System.getProperty("user.dir"));
         if (!currentDirectory.exists()) {
             currentDirectory.mkdirs();
@@ -74,12 +74,12 @@ public class Terminal extends JFrame {
         try {
             consoleOutput.append("$ " + command + "\n");
             filesystem.Logger.logCommandExecuted(command);
-            // Разделяем команду на части
+            
             String[] parts = command.split("\\s+");
             if (parts.length == 0) return;
             String cmd = parts[0];
 
-            // Обработка встроенных команд
+            
             switch (cmd) {
                 case "help":
                     printHelp();
@@ -106,7 +106,7 @@ public class Terminal extends JFrame {
                     break;
 
                 case "exit":
-                    dispose(); // Закрыть окно терминала
+                    dispose(); 
                     break;
 
                 default:
@@ -182,7 +182,7 @@ public class Terminal extends JFrame {
             String filename = parts[1];
             File fileToDelete = new File(currentDirectory, filename);
 
-            // 🔒 Проверка: нельзя удалять файлы из System
+            
             if (fileToDelete.getAbsolutePath().startsWith(fileManager.getSystemPath())) {
                 consoleOutput.append("Ошибка: Невозможно удалить файл из защищённой папки 'System'.\n");
                 return;
