@@ -21,7 +21,8 @@ public class PopupWindow extends JFrame {
     private void readFromStdIn() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String line;
-            while ((line = reader.readLine())
+            while ((line = reader.readLine()) != null) {
+                String finalLine = line;
                 SwingUtilities.invokeLater(() -> infoArea.append(finalLine + "\n"));
             }
         } catch (IOException e) {
