@@ -1,41 +1,52 @@
 # SuperApp
 
-SuperApp - графический файловый менеджер для Linux на Java.
+SuperApp - графический файловый менеджер на Java.
 
-## Maven-сборка
+## Как теперь работать с проектом
 
-- `pom.xml` находится в корне проекта
+Maven сам умеет:
 
-- итоговый исполняемый jar собирается в `target/SuperApp.jar`
+- собирать проект
+- запускать программу
+- собирать исполняемый jar
 
-В `pom.xml` Maven настроен на нестандартный путь к исходникам через `sourceDirectory`, поэтому переносить файлы не нужно.
+Исходники остаются в `System/src/main/java`, Maven берет их оттуда через настройку `sourceDirectory` в `pom.xml`.
 
 ## Требования
 
 - Java 21
 - Maven 3.9+
 
-## Сборка
+## Команды
+
+Собрать jar:
 
 ```bash
 mvn clean package
 ```
 
-После сборки jar будет лежать здесь:
+После этого jar будет лежать в:
 
 ```bash
 target/SuperApp.jar
 ```
 
-## Запуск
+Собрать и сразу запустить программу через Maven:
 
 ```bash
-java -jar target/SuperApp.jar
+mvn clean package exec:java
 ```
 
-или
+Быстрый запуск без упаковки jar:
 
 ```bash
-./run-superapp.sh
+mvn compile exec:java
 ```
 
+## Что настроено в pom.xml
+
+- `maven-compiler-plugin` компилирует проект под Java 21
+- `exec-maven-plugin` запускает главный класс `filesystem.MainWindow`
+- `maven-shade-plugin` собирает готовый `target/SuperApp.jar` со всеми зависимостями
+
+Отдельный shell-скрипт для запуска больше не нужен: Maven умеет и собирать, и запускать проект сам.
